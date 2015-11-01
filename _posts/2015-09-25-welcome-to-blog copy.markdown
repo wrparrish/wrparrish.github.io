@@ -2,7 +2,7 @@
 layout: post
 title:  "Welcome to Thunderdome!"
 date:   2015-09-25 12:11:47
-categories: android introduction personal
+categories: android 
 featured: true
 comments: true
 
