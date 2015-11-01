@@ -22,35 +22,6 @@ These are readily obtained by going to Android Studio -> Preferences -> Plugins 
     2. Kotlin Android Extensions
     
 ### Gradle modifications
-Project level changes:
-
-{% highlight groovy %}
-
-buildscript {
-    ext.support_version = '23.1.0'
-    ext.kotlin_version = '1.0.0-beta-1038'
-    ext.anko_version = '0.7.2'
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:1.3.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
-    }
-
-    allprojects {
-        repositories {
-            jcenter()
-        }
-    }
-
-
-}
-
-{% endhighlight %}
-
 App level changes
 
 {% highlight groovy %}
@@ -88,12 +59,30 @@ dependencies {
     compile "com.android.support:design:$support_version"
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.anko:anko-sdk15:$anko_version"
+
+}
+
+buildscript {
+    ext.support_version = '23.1.0'
+    ext.kotlin_version = '1.0.0-beta-1038'
+    ext.anko_version = '0.7.2'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
+
+    }
+}
+repositories {
+    mavenCentral()
 }
 
 
 {% endhighlight %}
 
-Note,  the above defining of a kotlin srcDir is optional.  However it will likely be helpful to keep our files seperate for now.
+Note,  the above defining of a kotlin srcDir is optional.  However it will likely be helpful to keep our files seperate for now.  Also, the buildscript that contains the dependencies for the kotlin-android-extensions, and gradle-plugin needed to be in my App level build.gradle file.  I have seen documentation and examples that put this in the project level gradle file,  but i was never able to utilize the android extensions functionality when doing this.
 
 ### Java conversion(optional)
 

@@ -65,43 +65,18 @@
     <p>Welcome back!
 After a brief hiatus (My work laptop was stolen, replaced, and then i got busy getting a product to the play store)  i have returned, and will work towards getting this blog back on track. As intended,  i’d like to target a quick hello world example in Kotlin. This set’s us up for success as we move forward with the intended larger project,  and is also a timely post with the  Beta 1.0 release of Kotlin, with the official V1.0 being expected sometime in the near future. </p>
 
-<p>Getting going with Kotlin in an Android project is not a difficult task,  thanks to the syngergy gained by the language designers also working for the same comapny that is behind the tooling of IntellijIdea,  upon which the Android Tools team builds our IDE.</p>
+<p>Getting going with Kotlin in an Android project is not a difficult task,  thanks to the syngergy gained by the language designers also working for the same company that is behind the tooling of IntellijIdea,  upon which the Android Tools team builds our IDE.</p>
 
 <p>General setup can easily be broken down into a couple of requirements</p>
 
 <h3 id="ide-plugins">IDE Plugins</h3>
-<p>These are easily obtained by going to Android Studio -&gt; Preferences -&gt; Plugins -&gt; Browse Respoitories:</p>
+<p>These are readily obtained by going to Android Studio -&gt; Preferences -&gt; Plugins -&gt; Browse Respoitories:</p>
 
 <pre><code>1. Kotlin Plugin
 2. Kotlin Android Extensions
 </code></pre>
 
 <h3 id="gradle-modifications">Gradle modifications</h3>
-<p>Project level changes:</p>
-
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">buildscript</span> <span class="o">{</span>
-    <span class="n">ext</span><span class="o">.</span><span class="na">support_version</span> <span class="o">=</span> <span class="s1">&#39;23.1.0&#39;</span>
-    <span class="n">ext</span><span class="o">.</span><span class="na">kotlin_version</span> <span class="o">=</span> <span class="s1">&#39;1.0.0-beta-1038&#39;</span>
-    <span class="n">ext</span><span class="o">.</span><span class="na">anko_version</span> <span class="o">=</span> <span class="s1">&#39;0.7.2&#39;</span>
-    <span class="n">repositories</span> <span class="o">{</span>
-        <span class="n">jcenter</span><span class="o">()</span>
-    <span class="o">}</span>
-
-    <span class="n">dependencies</span> <span class="o">{</span>
-        <span class="n">classpath</span> <span class="s1">&#39;com.android.tools.build:gradle:1.3.1&#39;</span>
-        <span class="n">classpath</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version&quot;</span>
-        <span class="n">classpath</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version&quot;</span>
-    <span class="o">}</span>
-
-    <span class="n">allprojects</span> <span class="o">{</span>
-        <span class="n">repositories</span> <span class="o">{</span>
-            <span class="n">jcenter</span><span class="o">()</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-
-<span class="o">}</span></code></pre></div>
-
 <p>App level changes</p>
 
 <div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;com.android.application&#39;</span>
@@ -137,7 +112,27 @@ After a brief hiatus (My work laptop was stolen, replaced, and then i got busy g
     <span class="n">compile</span> <span class="s2">&quot;com.android.support:design:$support_version&quot;</span>
     <span class="n">compile</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version&quot;</span>
     <span class="n">compile</span> <span class="s2">&quot;org.jetbrains.anko:anko-sdk15:$anko_version&quot;</span>
+
+<span class="o">}</span>
+
+<span class="n">buildscript</span> <span class="o">{</span>
+    <span class="n">ext</span><span class="o">.</span><span class="na">support_version</span> <span class="o">=</span> <span class="s1">&#39;23.1.0&#39;</span>
+    <span class="n">ext</span><span class="o">.</span><span class="na">kotlin_version</span> <span class="o">=</span> <span class="s1">&#39;1.0.0-beta-1038&#39;</span>
+    <span class="n">ext</span><span class="o">.</span><span class="na">anko_version</span> <span class="o">=</span> <span class="s1">&#39;0.7.2&#39;</span>
+    <span class="n">repositories</span> <span class="o">{</span>
+        <span class="n">mavenCentral</span><span class="o">()</span>
+    <span class="o">}</span>
+    <span class="n">dependencies</span> <span class="o">{</span>
+        <span class="n">classpath</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version&quot;</span>
+        <span class="n">classpath</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version&quot;</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="n">repositories</span> <span class="o">{</span>
+    <span class="n">mavenCentral</span><span class="o">()</span>
 <span class="o">}</span></code></pre></div>
+
+<p>Note,  the above defining of a kotlin srcDir is optional.  However it will likely be helpful to keep our files seperate for now.  Also, the buildscript that contains the dependencies for the kotlin-android-extensions, and gradle-plugin needed to be in my App level build.gradle file.  I have seen documentation and examples that put this in the project level gradle file,  but i was never able to utilize the android extensions functionality when doing this.</p>
 
 <h3 id="java-conversionoptional">Java conversion(optional)</h3>
 
