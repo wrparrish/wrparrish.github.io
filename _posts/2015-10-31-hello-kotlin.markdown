@@ -11,12 +11,12 @@ imagefeature: images/intro.jpg
 Welcome back!
 After a brief hiatus (My work laptop was stolen, replaced, and then i got busy getting a product to the play store)  i have returned, and will work towards getting this blog back on track. As intended,  i'd like to target a quick hello world example in Kotlin. This set's us up for success as we move forward with the intended larger project,  and is also a timely post with the  Beta 1.0 release of Kotlin, with the official V1.0 being expected sometime in the near future. 
 
-Getting going with Kotlin in an Android project is not a difficult task,  thanks to the syngergy gained by the language designers also working for the same comapny that is behind the tooling of IntellijIdea,  upon which the Android Tools team builds our IDE.
+Getting going with Kotlin in an Android project is not a difficult task,  thanks to the syngergy gained by the language designers also working for the same company that is behind the tooling of IntellijIdea,  upon which the Android Tools team builds our IDE.
 
 General setup can easily be broken down into a couple of requirements
 
 ### IDE Plugins
-These are easily obtained by going to Android Studio -> Preferences -> Plugins -> Browse Respoitories:
+These are readily obtained by going to Android Studio -> Preferences -> Plugins -> Browse Respoitories:
 
     1. Kotlin Plugin
     2. Kotlin Android Extensions
@@ -92,6 +92,8 @@ dependencies {
 
 
 {% endhighlight %}
+
+Note,  the above defining of a kotlin srcDir is optional.  However it will likely be helpful to keep our files seperate for now.
 
 ### Java conversion(optional)
 
