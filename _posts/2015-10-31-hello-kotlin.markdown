@@ -143,7 +143,7 @@ class MainActivity : AppCompatActivity() {
 Take note of the following import: **import kotlinx.android.synthetic.activity_main.**
 
 This import is a convenience feature provided to us by Kotlin's Android Extensions. It negates the necessity of performing a findViewById() lookup,  and provides direct access to the widgets by using their id from xml. 
-This makes the following code possible, without an import, casting, or  id lookup
+This makes the following code possible without any other explicit imports, casting, or  id lookup.
 
 {% highlight kotlin %}
 
