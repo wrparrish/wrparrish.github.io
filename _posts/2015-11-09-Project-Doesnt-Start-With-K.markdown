@@ -13,145 +13,156 @@ The time has come to define ( perhaps redefine ) the scope of our intended proje
 
 Rather than introduce that burden of responsibility for anyone that was interested in following along,  we will instead use the [SeatGeek API](http://platform.seatgeek.com/) which gives us the benefits of a well organized and documented open API for our use. 
 
-General setup can easily be broken down into a couple of requirements
+Our goals for version 1 of the project can be summarized as follows:
 
-### IDE Plugins
-These are readily obtained by going to Android Studio -> Preferences -> Plugins -> Browse Respoitories:
+    1. Identify and call an appropriate SeatGeek endpoint.
+    2. Set up the corresponding Data class
+    3. Define the relationship between JSON results and Data Class.
+    4. Populate UI
 
-    1. Kotlin Plugin
-    2. Kotlin Android Extensions
-    
-### Gradle modifications
-App level changes
+### Identify and call an appropriate SeatGeek endpoint.
+For the sake of this project,  i believe  SeatGeeks Event class, and endpoint to be a good fit for our needs.  It will allow us to build our rudimentary initial version, as well as allow for additional complexity and interactions, as we iterate over the project.
 
-{% highlight groovy %}
+The Url we will be targetting initially is 'http://api.seatgeek.com/2/events?geoip=true'
+One of the nice features of the SeatGeek API is the ability to append an optional argument for geoip.  When set to true, the API will provide events related to the location resolved from the IP the call originates from. This is a handy feature to improve the quality of our results on the initial iteration of the project,  until we can dive into some of the more native location based services.
 
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+One of the many convenience features kotlin provides developers,  is a handy abstraction for opening a URL Connection and receiving the response as a string. The implementation of this abstraction is as follows:
 
-android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+{% highlight kotlin %}
+  val jsonResponseString = URL(url).readText()
+{% endhighlight %}
 
-    defaultConfig {
-        applicationId "com.ruthlessprogramming.doesntstartwithk"
-        minSdkVersion 16
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+While behind the scenes we are still making use of an HttpUrlConnection and a BufferedReader,  it's nice to be able avoid the boilerplate setup involved. In order to keep the call off of the main thread we can make us of another convenience feature provided by the language.
+
+{% highlight kotlin %}
+async{
+      val jsonResponseString = URL(url).readText()
+   uiThread { Toast.makeText(context, "Request performed", Toast.LENGTH_LONG).show() }
         }
-    }
-
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-}
-
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile "com.android.support:appcompat-v7:$support_version"
-    compile "com.android.support:design:$support_version"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.anko:anko-sdk15:$anko_version"
-
-}
-
-buildscript {
-    ext.support_version = '23.1.0'
-    ext.kotlin_version = '1.0.0-beta-1038'
-    ext.anko_version = '0.7.2'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"
-
-    }
-}
-repositories {
-    mavenCentral()
-}
-
 
 {% endhighlight %}
 
-Note,  the above defining of a kotlin srcDir is optional.  However it will likely be helpful to keep our files seperate for now.  Also, the buildscript that contains the dependencies for the kotlin-android-extensions, and gradle-plugin needed to be in my App level build.gradle file.  I have seen documentation and examples that put this in the project level gradle file,  but i was never able to utilize the android extensions functionality when doing this.
+This allows us to easily declare the work we want done on a background thread, and yet still provides an easy way to post the results to the UI Thread.  Its comparable to the AsyncTask in Android,  but saves us the boilerplate of Callbacks.
 
-### Java conversion(optional)
-
-One of the great features that eases the transition from Java to Kotlin, is the ability to have the IDE convert any of your existing Java classes into a kotlin file.  As an example when using this feature when choosing the new  Activity with a FAB template from Android Studio,  we are left with the following  kotlin compliant MainActivity class,  which serves as a valuable reference point as we start this journey.
+However, for this project i wanted to explore some of the libraries being implemented in the Kotlin community,  and stretch my legs beyond the typical OkHttp / Retrofit stack that i use at work. To that end i have decided to implement [Fuel](https://github.com/kittinunf/Fuel) for the projects networking. You can read all about it, at the link provided.   An implementation of its standard network call when targetting our selected endpoint is as follows:
 
 {% highlight kotlin %}
 
-package com.ruthlessprogramming.doesntstartwithk
+        async {
+
+          url.httpGet().responseJson { request, response, either ->
+                //do something with response
+                when (either) {
+                    is Either.Left -> Log.e(javaClass.simpleName , response.toString())
 
 
-import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
-import android.view.View
-import android.view.Menu
-import android.view.MenuItem
+                    is Either.Right -> {
+                        Log.d(javaClass.simpleName, response.toString())
 
-import kotlinx.android.synthetic.activity_main.*
+                    }
 
-class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        setSupportActionBar(toolbar)
-
-        fab.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(view: View) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG).setAction("Action", null).show()
+                }
             }
-        })
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-   override  fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        val id = item.itemId
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true
+            uiThread { Toast.makeText(context, "Request performed", Toast.LENGTH_LONG).show() }
         }
 
-        return super.onOptionsItemSelected(item)
-    }
-}
+{% endhighlight %}
+
+As the documentation states 'either is a functional style data structure that represents data that contains either left or right but not both'.  This makes it well suited to handle the usecase of representing success or failure. Indeed,  it used  for that purpose within the library. It follows a convention of  Left  being an "error"  and Right indicating "success".
+
+The above function returns us the JSON we are looking for.  In the interest of brevity, i have included only the structure of a single Event JSON Object from the response data.  
+
+
+
+{% highlight json %}
+     {
+            "links": [],
+            "id": 2796833,
+            "stats": {
+                "listing_count": null,
+                "average_price": null,
+                "lowest_price_good_deals": null,
+                "lowest_price": null,
+                "highest_price": null
+            },
+            "title": "Promised Land Sound",
+            "announce_date": "2015-09-03T00:00:00",
+            "score": 0.4543,
+            "date_tbd": false,
+            "type": "concert",
+            "datetime_local": "2015-11-10T18:30:00",
+            "visible_until_utc": "2015-11-11T03:30:00",
+            "time_tbd": false,
+            "taxonomies": [
+                {
+                    "parent_id": null,
+                    "id": 2000000,
+                    "name": "concert"
+                }
+            ],
+            "performers": [
+                {
+                    "stats": {
+                        "event_count": 3
+                    },
+                    "name": "Promised Land Sound",
+                    "short_name": "Promised Land Sound",
+                    "url": "https://seatgeek.com/promised-land-sound-tickets",
+                    "type": "band",
+                    "image": null,
+                    "home_venue_id": null,
+                    "primary": true,
+                    "score": 0.45332,
+                    "images": {},
+                    "slug": "promised-land-sound",
+                    "taxonomies": [
+                        {
+                            "parent_id": null,
+                            "id": 2000000,
+                            "name": "concert"
+                        }
+                    ],
+                    "has_upcoming_events": true,
+                    "id": 277325
+                }
+            ],
+            "url": "https://seatgeek.com/promised-land-sound-tickets/new-york-new-york-mercury-lounge-2015-11-10-6-30-pm/concert/2796833/",
+            "created_at": "2015-09-03T00:00:00",
+            "venue": {
+                "city": "New York",
+                "name": "Mercury Lounge",
+                "extended_address": "New York, NY 10002",
+                "url": "https://seatgeek.com/venues/mercury-lounge/tickets/",
+                "country": "US",
+                "display_location": "New York, NY",
+                "links": [],
+                "slug": "mercury-lounge",
+                "state": "NY",
+                "score": 0.45094,
+                "postal_code": "10002",
+                "location": {
+                    "lat": 40.7223,
+                    "lon": -73.9867
+                },
+                "address": "217 East Houston Street",
+                "timezone": "America/New_York",
+                "id": 327
+            },
+            "short_title": "Promised Land Sound",
+            "datetime_utc": "2015-11-10T23:30:00",
+            "general_admission": true,
+            "datetime_tbd": false
+        }
 
 {% endhighlight %}
 
-Take note of the following import: **import kotlinx.android.synthetic.activity_main.**
+From this data,  we will be able to create the Data classes that will allow us to represent the Events, and its associated values for use within the API.  We will do this in part two, along with preparing the RecyclerView and its supporting cast,  to display this information for us.
 
-This import is a convenience feature provided to us by Kotlin's Android Extensions. It negates the necessity of performing a findViewById() lookup,  and provides direct access to the widgets by using their id from xml. 
-This makes the following code possible without any other explicit imports, casting, or  id lookup.
 
-{% highlight kotlin %}
 
-    setSupportActionBar(toolbar)
     
-{% endhighlight %}
 
-At this point, MainActivity compiles and is able to be launched through an emulator.  We will use this foundation and improve upon it with a RecyclerView,  and use it to display some content from the Rotten Tomatoes API.  
 
     
 
