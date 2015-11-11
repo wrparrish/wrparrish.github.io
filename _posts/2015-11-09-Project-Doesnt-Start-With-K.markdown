@@ -53,8 +53,10 @@ However, for this project i wanted to explore some of the libraries being implem
           url.httpGet().responseJson { request, response, either ->
                 //do something with response
                 when (either) {
-                    is Either.Left -> Log.e(javaClass.simpleName , response.toString())
-
+                    is Either.Left ->{
+                    Log.e(javaClass.simpleName , response.toString())
+                    
+                    }
 
                     is Either.Right -> {
                         Log.d(javaClass.simpleName, response.toString())
