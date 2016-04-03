@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Getting back underway with doesnt start with K"
-date:   2016-04-03 16:30:47
+date:   2016-04-13 16:30:47
 categories: kotlin
 featured: true
 comments: true
