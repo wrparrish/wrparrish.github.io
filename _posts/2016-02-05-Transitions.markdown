@@ -21,6 +21,15 @@ The new Kotlin plugin will allow you to configure Kotlin within your project,  a
 
 In addition, the Fuel networking library we had experimented with previously has undergone changes of its own,  in accordance with  the updates to the Kotlin. The semantics around result handling have changed slightly, but in general the process is still familiar, and we will delve into it in earnest in the following post ( which is already mostly written ).
 
+
+
+In general will be able to get by with just a couple of changes
+
+    1. Remove android-extensions dependency
+    2. Increment build tools. 
+    3. Increment kotlin version, anko version, and android support libraries
+    4. Increment 3rd party libraries  (currently only using fuel)
+
 Wrapping our refresh in preperation of revisiting the projects leaves us with the following changes to our gradle file (note due to problems with instance run,  i have left the main gradle plugin version where it was previously).
 
 
@@ -84,13 +93,6 @@ dependencies {
 
 {% endhighlight %}
 
-
-In general will be able to get by with just a couple of changes
-
-    1. Remove android-extensions dependency
-    2. Increment build tools. 
-    3. Increment kotlin version, anko version, and android support libraries
-    4. Increment 3rd party libraries  (currently only using fuel)
     
 
 
