@@ -30,7 +30,7 @@ In general will be able to get by with just a couple of changes
     3. Increment kotlin version, anko version, and android support libraries
     4. Increment 3rd party libraries  (currently only using fuel)
 
-Wrapping our refresh in preperation of revisiting the projects leaves us with the following changes to our gradle file (note due to problems with instance run,  i have left the main gradle plugin version where it was previously).
+Wrapping up our refresh in preperation of revisiting the projects leaves us with the following changes to our gradle file (note due to problems with instance run,  i have left the main gradle plugin version where it was previously).
 
 
 
