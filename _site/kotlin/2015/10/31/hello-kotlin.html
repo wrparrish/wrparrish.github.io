@@ -10,8 +10,8 @@
   <meta name="description" content="Welcome back!After a brief hiatus (My work laptop was stolen, replaced, and then i got busy getting a product to the play store)  i have returned, and will w...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://ruthlessprogramming.com/kotlin/2015/10/31/hello-kotlin.html">
-  <link rel="alternate" type="application/rss+xml" title="Ruthless Programming" href="http://ruthlessprogramming.com/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/kotlin/2015/10/31/hello-kotlin.html">
+  <link rel="alternate" type="application/rss+xml" title="Ruthless Programming" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -63,7 +63,7 @@
 
   <article class="post-content">
     <p>Welcome back!
-After a brief hiatus (My work laptop was stolen, replaced, and then i got busy getting a product to the play store)  i have returned, and will work towards getting this blog back on track. As intended,  i’d like to target a quick hello world example in Kotlin. This set’s us up for success as we move forward with the intended larger project,  and is also a timely post with the  Beta 1.0 release of Kotlin, with the official V1.0 being expected sometime in the near future. </p>
+After a brief hiatus (My work laptop was stolen, replaced, and then i got busy getting a product to the play store)  i have returned, and will work towards getting this blog back on track. As intended,  i’d like to target a quick hello world example in Kotlin. This set’s us up for success as we move forward with the intended larger project,  and is also a timely post with the  Beta 1.0 release of Kotlin, with the official V1.0 being expected sometime in the near future.</p>
 
 <p>Getting going with Kotlin in an Android project is not a difficult task,  thanks to the syngergy gained by the language designers also working for the same company that is behind the tooling of IntellijIdea,  upon which the Android Tools team builds our IDE.</p>
 
@@ -72,65 +72,66 @@ After a brief hiatus (My work laptop was stolen, replaced, and then i got busy g
 <h3 id="ide-plugins">IDE Plugins</h3>
 <p>These are readily obtained by going to Android Studio -&gt; Preferences -&gt; Plugins -&gt; Browse Respoitories:</p>
 
-<pre><code>1. Kotlin Plugin
+<div class="highlighter-rouge"><pre class="highlight"><code>1. Kotlin Plugin
 2. Kotlin Android Extensions
 </code></pre>
+</div>
 
 <h3 id="gradle-modifications">Gradle modifications</h3>
 <p>App level changes</p>
 
-<div class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;com.android.application&#39;</span>
-<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">&#39;kotlin-android&#39;</span>
+<figure class="highlight"><pre><code class="language-groovy" data-lang="groovy"><span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'com.android.application'</span>
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'kotlin-android'</span>
 
 <span class="n">android</span> <span class="o">{</span>
     <span class="n">compileSdkVersion</span> <span class="mi">23</span>
-    <span class="n">buildToolsVersion</span> <span class="s2">&quot;23.0.1&quot;</span>
+    <span class="n">buildToolsVersion</span> <span class="s2">"23.0.1"</span>
 
     <span class="n">defaultConfig</span> <span class="o">{</span>
-        <span class="n">applicationId</span> <span class="s2">&quot;com.ruthlessprogramming.doesntstartwithk&quot;</span>
+        <span class="n">applicationId</span> <span class="s2">"com.ruthlessprogramming.doesntstartwithk"</span>
         <span class="n">minSdkVersion</span> <span class="mi">16</span>
         <span class="n">targetSdkVersion</span> <span class="mi">23</span>
         <span class="n">versionCode</span> <span class="mi">1</span>
-        <span class="n">versionName</span> <span class="s2">&quot;1.0&quot;</span>
+        <span class="n">versionName</span> <span class="s2">"1.0"</span>
     <span class="o">}</span>
     <span class="n">buildTypes</span> <span class="o">{</span>
         <span class="n">release</span> <span class="o">{</span>
             <span class="n">minifyEnabled</span> <span class="kc">false</span>
-            <span class="n">proguardFiles</span> <span class="nf">getDefaultProguardFile</span><span class="o">(</span><span class="s1">&#39;proguard-android.txt&#39;</span><span class="o">),</span> <span class="s1">&#39;proguard-rules.pro&#39;</span>
+            <span class="n">proguardFiles</span> <span class="nf">getDefaultProguardFile</span><span class="o">(</span><span class="s1">'proguard-android.txt'</span><span class="o">),</span> <span class="s1">'proguard-rules.pro'</span>
         <span class="o">}</span>
     <span class="o">}</span>
 
     <span class="n">sourceSets</span> <span class="o">{</span>
-        <span class="n">main</span><span class="o">.</span><span class="na">java</span><span class="o">.</span><span class="na">srcDirs</span> <span class="o">+=</span> <span class="s1">&#39;src/main/kotlin&#39;</span>
+        <span class="n">main</span><span class="o">.</span><span class="na">java</span><span class="o">.</span><span class="na">srcDirs</span> <span class="o">+=</span> <span class="s1">'src/main/kotlin'</span>
     <span class="o">}</span>
 <span class="o">}</span>
 
 <span class="n">dependencies</span> <span class="o">{</span>
-    <span class="n">compile</span> <span class="nf">fileTree</span><span class="o">(</span><span class="nl">dir:</span> <span class="s1">&#39;libs&#39;</span><span class="o">,</span> <span class="nl">include:</span> <span class="o">[</span><span class="s1">&#39;*.jar&#39;</span><span class="o">])</span>
-    <span class="n">testCompile</span> <span class="s1">&#39;junit:junit:4.12&#39;</span>
-    <span class="n">compile</span> <span class="s2">&quot;com.android.support:appcompat-v7:$support_version&quot;</span>
-    <span class="n">compile</span> <span class="s2">&quot;com.android.support:design:$support_version&quot;</span>
-    <span class="n">compile</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version&quot;</span>
-    <span class="n">compile</span> <span class="s2">&quot;org.jetbrains.anko:anko-sdk15:$anko_version&quot;</span>
+    <span class="n">compile</span> <span class="nf">fileTree</span><span class="o">(</span><span class="nl">dir:</span> <span class="s1">'libs'</span><span class="o">,</span> <span class="nl">include:</span> <span class="o">[</span><span class="s1">'*.jar'</span><span class="o">])</span>
+    <span class="n">testCompile</span> <span class="s1">'junit:junit:4.12'</span>
+    <span class="n">compile</span> <span class="s2">"com.android.support:appcompat-v7:$support_version"</span>
+    <span class="n">compile</span> <span class="s2">"com.android.support:design:$support_version"</span>
+    <span class="n">compile</span> <span class="s2">"org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"</span>
+    <span class="n">compile</span> <span class="s2">"org.jetbrains.anko:anko-sdk15:$anko_version"</span>
 
 <span class="o">}</span>
 
 <span class="n">buildscript</span> <span class="o">{</span>
-    <span class="n">ext</span><span class="o">.</span><span class="na">support_version</span> <span class="o">=</span> <span class="s1">&#39;23.1.0&#39;</span>
-    <span class="n">ext</span><span class="o">.</span><span class="na">kotlin_version</span> <span class="o">=</span> <span class="s1">&#39;1.0.0-beta-1038&#39;</span>
-    <span class="n">ext</span><span class="o">.</span><span class="na">anko_version</span> <span class="o">=</span> <span class="s1">&#39;0.7.2&#39;</span>
+    <span class="n">ext</span><span class="o">.</span><span class="na">support_version</span> <span class="o">=</span> <span class="s1">'23.1.0'</span>
+    <span class="n">ext</span><span class="o">.</span><span class="na">kotlin_version</span> <span class="o">=</span> <span class="s1">'1.0.0-beta-1038'</span>
+    <span class="n">ext</span><span class="o">.</span><span class="na">anko_version</span> <span class="o">=</span> <span class="s1">'0.7.2'</span>
     <span class="n">repositories</span> <span class="o">{</span>
         <span class="n">mavenCentral</span><span class="o">()</span>
     <span class="o">}</span>
     <span class="n">dependencies</span> <span class="o">{</span>
-        <span class="n">classpath</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version&quot;</span>
-        <span class="n">classpath</span> <span class="s2">&quot;org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version&quot;</span>
+        <span class="n">classpath</span> <span class="s2">"org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"</span>
+        <span class="n">classpath</span> <span class="s2">"org.jetbrains.kotlin:kotlin-android-extensions:$kotlin_version"</span>
 
     <span class="o">}</span>
 <span class="o">}</span>
 <span class="n">repositories</span> <span class="o">{</span>
     <span class="n">mavenCentral</span><span class="o">()</span>
-<span class="o">}</span></code></pre></div>
+<span class="o">}</span></code></pre></figure>
 
 <p>Note,  the above defining of a kotlin srcDir is optional.  However it will likely be helpful to keep our files seperate for now.  Also, the buildscript that contains the dependencies for the kotlin-android-extensions, and gradle-plugin needed to be in my App level build.gradle file.  I have seen documentation and examples that put this in the project level gradle file,  but i was never able to utilize the android extensions functionality when doing this.</p>
 
@@ -138,7 +139,7 @@ After a brief hiatus (My work laptop was stolen, replaced, and then i got busy g
 
 <p>One of the great features that eases the transition from Java to Kotlin, is the ability to have the IDE convert any of your existing Java classes into a kotlin file.  As an example when using this feature when choosing the new  Activity with a FAB template from Android Studio,  we are left with the following  kotlin compliant MainActivity class,  which serves as a valuable reference point as we start this journey.</p>
 
-<div class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.ruthlessprogramming.doesntstartwithk</span>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.ruthlessprogramming.doesntstartwithk</span>
 
 
 <span class="k">import</span> <span class="nn">android.os.Bundle</span>
@@ -150,7 +151,7 @@ After a brief hiatus (My work laptop was stolen, replaced, and then i got busy g
 
 <span class="k">import</span> <span class="nn">kotlinx.android.synthetic.activity_main.*</span>
 
-<span class="k">class</span> <span class="nc">MainActivity</span> <span class="p">:</span> <span class="n">AppCompatActivity</span><span class="p">()</span> <span class="p">{</span>
+<span class="kd">class</span> <span class="nc">MainActivity</span> <span class="p">:</span> <span class="n">AppCompatActivity</span><span class="p">()</span> <span class="p">{</span>
 
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
         <span class="k">super</span><span class="p">.</span><span class="n">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
@@ -158,42 +159,43 @@ After a brief hiatus (My work laptop was stolen, replaced, and then i got busy g
 
         <span class="n">setSupportActionBar</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span>
 
-        <span class="n">fab</span><span class="p">.</span><span class="n">setOnClickListener</span><span class="p">(</span><span class="k">object</span> <span class="err">: </span><span class="nc">View</span><span class="p">.</span><span class="n">OnClickListener</span> <span class="p">{</span>
+        <span class="n">fab</span><span class="p">.</span><span class="n">setOnClickListener</span><span class="p">(</span><span class="kd">object</span> <span class="err">: </span><span class="nc">View</span><span class="p">.</span><span class="n">OnClickListener</span> <span class="p">{</span>
             <span class="k">override</span> <span class="k">fun</span> <span class="nf">onClick</span><span class="p">(</span><span class="n">view</span><span class="p">:</span> <span class="n">View</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">Snackbar</span><span class="p">.</span><span class="n">make</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s">&quot;Replace with your own action&quot;</span><span class="p">,</span> <span class="n">Snackbar</span><span class="p">.</span><span class="n">LENGTH_LONG</span><span class="p">).</span><span class="n">setAction</span><span class="p">(</span><span class="s">&quot;Action&quot;</span><span class="p">,</span> <span class="k">null</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
+                <span class="n">Snackbar</span><span class="p">.</span><span class="n">make</span><span class="p">(</span><span class="n">view</span><span class="p">,</span> <span class="s">"Replace with your own action"</span><span class="p">,</span> <span class="n">Snackbar</span><span class="p">.</span><span class="n">LENGTH_LONG</span><span class="p">).</span><span class="n">setAction</span><span class="p">(</span><span class="s">"Action"</span><span class="p">,</span> <span class="k">null</span><span class="p">).</span><span class="n">show</span><span class="p">()</span>
             <span class="p">}</span>
         <span class="p">})</span>
     <span class="p">}</span>
 
     <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreateOptionsMenu</span><span class="p">(</span><span class="n">menu</span><span class="p">:</span> <span class="n">Menu</span><span class="p">):</span> <span class="n">Boolean</span> <span class="p">{</span>
-        <span class="c1">// Inflate the menu; this adds items to the action bar if it is present.</span>
-        <span class="n">menuInflater</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">menu</span><span class="p">.</span><span class="n">menu_main</span><span class="p">,</span> <span class="n">menu</span><span class="p">)</span>
+        <span class="c1">// Inflate the menu; this adds items to the action bar if it is present.
+</span>        <span class="n">menuInflater</span><span class="p">.</span><span class="n">inflate</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">menu</span><span class="p">.</span><span class="n">menu_main</span><span class="p">,</span> <span class="n">menu</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">true</span>
     <span class="p">}</span>
 
    <span class="k">override</span>  <span class="k">fun</span> <span class="nf">onOptionsItemSelected</span><span class="p">(</span><span class="n">item</span><span class="p">:</span> <span class="n">MenuItem</span><span class="p">):</span> <span class="n">Boolean</span> <span class="p">{</span>
-        <span class="c1">// Handle action bar item clicks here. The action bar will</span>
-        <span class="c1">// automatically handle clicks on the Home/Up button, so long</span>
-        <span class="c1">// as you specify a parent activity in AndroidManifest.xml.</span>
-        <span class="k">val</span> <span class="py">id</span> <span class="p">=</span> <span class="n">item</span><span class="p">.</span><span class="n">itemId</span>
+        <span class="c1">// Handle action bar item clicks here. The action bar will
+</span>        <span class="c1">// automatically handle clicks on the Home/Up button, so long
+</span>        <span class="c1">// as you specify a parent activity in AndroidManifest.xml.
+</span>        <span class="kd">val</span> <span class="py">id</span> <span class="p">=</span> <span class="n">item</span><span class="p">.</span><span class="n">itemId</span>
 
-        <span class="c1">//noinspection SimplifiableIfStatement</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">id</span> <span class="p">==</span> <span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">action_settings</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//noinspection SimplifiableIfStatement
+</span>        <span class="k">if</span> <span class="p">(</span><span class="n">id</span> <span class="p">==</span> <span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">action_settings</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">return</span> <span class="k">true</span>
         <span class="p">}</span>
 
         <span class="k">return</span> <span class="k">super</span><span class="p">.</span><span class="n">onOptionsItemSelected</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
     <span class="p">}</span>
-<span class="p">}</span></code></pre></div>
+<span class="p">}</span></code></pre></figure>
 
 <p>Take note of the following import: <strong>import kotlinx.android.synthetic.activity_main.</strong></p>
 
 <p>This import is a convenience feature provided to us by Kotlin’s Android Extensions. It negates the necessity of performing a findViewById() lookup,  and provides direct access to the widgets by using their id from xml. 
 This makes the following code possible without any other explicit imports, casting, or  id lookup.</p>
 
-<div class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">setSupportActionBar</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">    <span class="n">setSupportActionBar</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span>
+    </code></pre></figure>
 
-<p>At this point, MainActivity compiles and is able to be launched through an emulator.  We will use this foundation and improve upon it with a RecyclerView,  and use it to display some content from the Rotten Tomatoes API.  </p>
+<p>At this point, MainActivity compiles and is able to be launched through an emulator.  We will use this foundation and improve upon it with a RecyclerView,  and use it to display some content from the Rotten Tomatoes API.</p>
 
 
   </article>

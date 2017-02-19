@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Getting back underway with doesnt start with K</title>
+  <meta name="description" content="Welcome back!">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://localhost:4000/kotlin/2016/04/13/Project-Doesnt-Start-With-K-Refresh.html">
+  <link rel="alternate" type="application/rss+xml" title="Ruthless Programming" href="http://localhost:4000/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Ruthless Programming</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Getting back underway with doesnt start with K</h1>
+    <p class="post-meta">Apr 13, 2016</p>
+  </header>
+
+  <article class="post-content">
+    <p>Welcome back!</p>
+
+<p>Revisiting our goals for version 1 of the project can be summarized as follows:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>1. Identify and call an appropriate SeatGeek endpoint.
+2. Set up the corresponding Data class
+3. Define the relationship between JSON results and Data Class.
+4. Populate UI
+</code></pre>
+</div>
+
+<h3 id="identify-and-call-an-appropriate-seatgeek-endpoint">Identify and call an appropriate SeatGeek endpoint.</h3>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">     <span class="k">private</span> <span class="kd">val</span> <span class="py">URL</span>  <span class="p">=</span> <span class="s">"https://api.seatgeek.com/2/events"</span>
+     <span class="k">private</span> <span class="kd">val</span> <span class="py">COMPLETE_URL</span> <span class="p">=</span> <span class="s">"$URL?client_id=$clientId&amp;geoip=$useGeoIp"</span></code></pre></figure>
+
+<p>To fetch our events we will be using the /events endpoint exposed within the SeatGeek platform.  A recent change has required developers to use a client id  to access the api,  however it’s a quick process to register for and obtain one.   To that end,  we are parameterizing the url used for the request with this client id, and a value representing  our desire to use the geoIP  feature of the api, to automatically give us back events relevant to our resolved location.</p>
+
+<h3 id="set-up-the-corresponding-data-class">Set up the corresponding Data class</h3>
+
+<p>We are going to leverage the data class feature of kotlin to cut down on alot of the boilerplate for generating our response classes.  The structure of the event response call was visited in the last post,  a proper data class representing this structure is as follows:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">data class</span> <span class="nc">Event</span><span class="p">(</span><span class="kd">val</span> <span class="py">links</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Any</span><span class="p">&gt;,</span>
+                 <span class="kd">val</span> <span class="py">id</span><span class="p">:</span> <span class="n">Int</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">stats</span><span class="p">:</span> <span class="n">Stats</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">title</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">announce_date</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">score</span><span class="p">:</span> <span class="n">Double</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">date_tbd</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">type</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">datetime_local</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">visible_until_utc</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">time_tbd</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">taxonomies</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Taxonomy</span><span class="p">&gt;,</span>
+                 <span class="kd">val</span> <span class="py">performers</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Performer</span><span class="p">&gt;,</span>
+                 <span class="kd">val</span> <span class="py">url</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">created_at</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">venue</span><span class="p">:</span> <span class="n">Venue</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">short_title</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">datetime_utc</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">datetime_tbd</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">,</span>
+                 <span class="kd">val</span> <span class="py">general_admission</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">)</span></code></pre></figure>
+
+<p>We are keeping this tucked away in the <a href="https://github.com/wrparrish/DoesntStartWithK/blob/master/app/src/main/java/com/ruthlessprogramming/doesntstartwithk/data/server/ServerClasses.kt">ServerClasses.kt</a>  file, along with the data classes representing the other pertinent types such as performer, taxonomy, and venue etc. There are interesting benefits to be gained from the way kotlin allows you to play with class structure within a file, as well as declaring fields and classes as top level items within a package. Currently i’m only using  that feature as a basic placeholder for some values to be used as parameters for the SeatGeek requests in the <a href="https://github.com/wrparrish/DoesntStartWithK/blob/master/app/src/main/java/com/ruthlessprogramming/doesntstartwithk/data/server/NetParams.kt">NetParams.kt</a> file,  I’ll describe these in more detail, with a more robust implementation in a future post.</p>
+
+<h3 id="define-the-relationship-between-json-results-and-data-class">Define the relationship between JSON results and Data Class</h3>
+
+<p>Part of the future planned evolution of this project, is a full bore <a href="https://8thlight.com/blog/uncle-bob/2012/08/13/the-clean-architecture.html">clean architecture</a> rewrite.  In the interest of adhering to best practices, and to prepare for that eventual evolution,  it’s important that we make a distinction between the objects that are the “entities” or core  objects of our project,  and those that are tied to an implementation detail such as a web service / 3rd party api.  To that end, when we build a UI,  we are going to make it reliant on objects that represent a constant feature of the applications intent,  we will make them reliant on our entities, and not the server responses.  This can be achieved through a simple mapping process, where web responses are used to generate  entity / domain model objects. A very basic implementation of our Event domain model object is as follows:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">com.ruthlessprogramming.doesntstartwithk.data.server</span>
+
+<span class="k">import</span>  <span class="nn">com.ruthlessprogramming.doesntstartwithk.domain.model.Event</span> <span class="k">as</span> <span class="n">ModelEvent</span>
+
+<span class="kd">class</span> <span class="nc">ServerDataMapper</span> <span class="p">{</span>
+
+    <span class="k">fun</span> <span class="nf">convertEventItemToDomain</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="p">=</span> <span class="n">with</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="p">{</span>
+       <span class="n">ModelEvent</span><span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">id</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">title</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">url</span><span class="p">,</span> <span class="n">event</span><span class="p">.</span><span class="n">performers</span><span class="p">.</span><span class="n">first</span><span class="p">().</span><span class="n">image</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">fun</span> <span class="nf">convertEventResponseToDomain</span><span class="p">(</span><span class="n">result</span><span class="p">:</span> <span class="n">EventResponse</span><span class="p">):</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">ModelEvent</span><span class="p">&gt;</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">result</span><span class="p">.</span><span class="n">events</span><span class="p">.</span><span class="n">mapIndexed</span> <span class="p">{</span> <span class="n">i</span><span class="p">,</span> <span class="n">event</span> <span class="p">-&gt;</span>
+             <span class="n">convertEventItemToDomain</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span></code></pre></figure>
+
+<p>Here is where we make our associations between two kinds of Events. One is the model of the data structure provided by the seatgeek api that represents the idea of an event, and the other is a pared down version, that acts as our domain event object.   Of particular note is the following import</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">    
+<span class="k">import</span>  <span class="nn">com.ruthlessprogramming.doesntstartwithk.domain.model.Event</span> <span class="k">as</span> <span class="n">ModelEvent</span></code></pre></figure>
+
+<p>this allows us to have two classes named Event,  but to refer to it with greater context and detail, through adjusting the class through the  “as x” feature.   When using the primary constructor on ModelEvent in the above code, we are really creating an object of  type Event, that lives in the domain model.</p>
+
+<h3 id="populate-the-ui">Populate the UI</h3>
+
+<p>We are able to generate a list of events by querying the previously mentioned url,  and once mapping them into our expected domain model format, we are ready to make them available in the UI.  Our basic implementation of an activity that lists events is as follows:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">class</span> <span class="nc">EventListActivity</span> <span class="p">:</span> <span class="n">AppCompatActivity</span><span class="p">(){</span>
+    <span class="kd">val</span> <span class="py">recyclerView</span> <span class="k">by</span> <span class="n">lazy</span> <span class="p">{</span> <span class="n">findViewById</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">id</span><span class="p">.</span><span class="n">rv_movie_list</span><span class="p">)</span> <span class="k">as</span> <span class="n">RecyclerView</span> <span class="p">}</span>
+
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">:</span> <span class="n">Bundle</span><span class="p">?)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">.</span><span class="n">onCreate</span><span class="p">(</span><span class="n">savedInstanceState</span><span class="p">)</span>
+        <span class="n">setContentView</span><span class="p">(</span><span class="n">R</span><span class="p">.</span><span class="n">layout</span><span class="p">.</span><span class="n">screen_event_list</span><span class="p">)</span>
+        <span class="n">setupRecView</span><span class="p">()</span>
+        <span class="n">getEventsFromApi</span><span class="p">()</span>
+    <span class="p">}</span>
+
+
+    <span class="k">fun</span> <span class="nf">setupRecView</span><span class="p">(){</span>
+        <span class="kd">val</span> <span class="py">layoutManager</span><span class="p">:</span> <span class="n">LinearLayoutManager</span> <span class="p">=</span> <span class="n">LinearLayoutManager</span><span class="p">(</span><span class="n">applicationContext</span><span class="p">)</span>
+        <span class="kd">val</span> <span class="py">orientation</span><span class="p">:</span> <span class="n">Int</span> <span class="p">=</span> <span class="n">LinearLayoutManager</span><span class="p">.</span><span class="n">VERTICAL</span>
+        <span class="n">layoutManager</span><span class="p">.</span><span class="n">orientation</span> <span class="p">=</span> <span class="n">orientation</span>
+        <span class="n">recyclerView</span><span class="p">.</span><span class="n">layoutManager</span> <span class="p">=</span> <span class="n">layoutManager</span>
+
+    <span class="p">}</span>
+
+    <span class="k">fun</span> <span class="nf">getEventsFromApi</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">async</span><span class="p">()</span> <span class="p">{</span>
+            <span class="kd">val</span> <span class="py">result</span> <span class="p">=</span> <span class="n">RequestEventsCommand</span><span class="p">().</span><span class="n">execute</span><span class="p">()</span>
+            <span class="n">runOnUiThread</span> <span class="p">{</span>
+                <span class="kd">val</span> <span class="py">adapter</span><span class="p">:</span> <span class="n">EventAdapter</span> <span class="p">=</span> <span class="n">EventAdapter</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="n">recyclerView</span><span class="p">.</span><span class="n">adapter</span> <span class="p">=</span> <span class="n">adapter</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This is fairly standard stuff and doesn’t deviate much from the java implementation.  Of note however are the semantics around our reference to the recyclerview.  Kotlin properties must be initialized with a value, or null ( and thus be made nullable with the ? operator) and to avoid this cluttering our code,  we instead indicate that we want to initialize the recyclerview by lazy instantiation, and pass the require code to do so into a lambda.  This code wont be executed until the first time the recyclerview reference is used,  and we can be sure at that point that the reference is able  to be initialized with the correct value.</p>
+
+<h3 id="wrap-up">Wrap-up</h3>
+
+<p>With this implementation in place, we have achieved some of the initial alpha milestone goals of this project.   I wanted to get a kotlin project up and running, and start exploring some of the implementation details of using the language in an Android project, as well as begin to explore what the language could do for me and my peers.  While life distractions caused this to take longer than expected,  this is only the beginning of the intended goals for this project.  To follow is  a much more robust implementation that leverages a much more resilient, clean architecture,  and a deeper exploration of kotlins power.</p>
+
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Ruthless Programming</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>Ruthless Programming</li>
+          <li><a href="mailto:william@ruthlessprogramming.com">william@ruthlessprogramming.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/wrparrish">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">wrparrish</span>
+            </a>
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/parrishdev">
+              <span class="icon  icon--twitter">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809
+                  c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/>
+                </svg>
+              </span>
+
+              <span class="username">parrishdev</span>
+            </a>
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">This is a blog based on Android Development, however you can expect to see content covering a wide range of issues. Of particular interest is alternative JVM languages such as Kotlin,  implementation guidance and how to tutorials for beginners and developers at large
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

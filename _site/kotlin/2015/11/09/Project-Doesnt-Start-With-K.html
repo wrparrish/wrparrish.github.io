@@ -10,8 +10,8 @@
   <meta name="description" content="Welcome back!The time has come to define ( perhaps redefine ) the scope of our intended project. The original intent was to leverage the Rotten Tomatoes API ...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://ruthlessprogramming.com/kotlin/2015/11/09/Project-Doesnt-Start-With-K.html">
-  <link rel="alternate" type="application/rss+xml" title="Ruthless Programming" href="http://ruthlessprogramming.com/feed.xml" />
+  <link rel="canonical" href="http://localhost:4000/kotlin/2015/11/09/Project-Doesnt-Start-With-K.html">
+  <link rel="alternate" type="application/rss+xml" title="Ruthless Programming" href="http://localhost:4000/feed.xml" />
 </head>
 
 
@@ -65,15 +65,16 @@
     <p>Welcome back!
 The time has come to define ( perhaps redefine ) the scope of our intended project. The original intent was to leverage the Rotten Tomatoes API to generate a reasonable starter application in Kotlin. The intended goals were a application that made network calls, parsed json, and used the data to populate some sort of adapter view. The Rotten Tomatoes API now requires registering for, and getting approval to use, an API key to access their data.</p>
 
-<p>Rather than introduce that burden of responsibility for anyone that was interested in following along,  we will instead use the <a href="http://platform.seatgeek.com/">SeatGeek API</a> which gives us the benefits of a well organized and documented open API for our use. </p>
+<p>Rather than introduce that burden of responsibility for anyone that was interested in following along,  we will instead use the <a href="http://platform.seatgeek.com/">SeatGeek API</a> which gives us the benefits of a well organized and documented open API for our use.</p>
 
 <p>Our goals for version 1 of the project can be summarized as follows:</p>
 
-<pre><code>1. Identify and call an appropriate SeatGeek endpoint.
+<div class="highlighter-rouge"><pre class="highlight"><code>1. Identify and call an appropriate SeatGeek endpoint.
 2. Set up the corresponding Data class
 3. Define the relationship between JSON results and Data Class.
 4. Populate UI
 </code></pre>
+</div>
 
 <h3 id="identify-and-call-an-appropriate-seatgeek-endpoint">Identify and call an appropriate SeatGeek endpoint.</h3>
 <p>For the sake of this project,  i believe  SeatGeeks Event class, and endpoint to be a good fit for our needs.  It will allow us to build our rudimentary initial version, as well as allow for additional complexity and interactions, as we iterate over the project.</p>
@@ -83,26 +84,28 @@ One of the nice features of the SeatGeek API is the ability to append an optiona
 
 <p>One of the many convenience features kotlin provides developers,  is a handy abstraction for opening a URL Connection and receiving the response as a string. The implementation of this abstraction is as follows:</p>
 
-<div class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">val</span> <span class="py">jsonResponseString</span> <span class="p">=</span> <span class="n">URL</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">readText</span><span class="p">()</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">  <span class="kd">val</span> <span class="py">jsonResponseString</span> <span class="p">=</span> <span class="n">URL</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">readText</span><span class="p">()</span></code></pre></figure>
 
 <p>While behind the scenes we are still making use of an HttpUrlConnection and a BufferedReader,  it’s nice to be able avoid the boilerplate setup involved. In order to keep the call off of the main thread we can make us of another convenience feature provided by the language.</p>
 
-<div class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">async</span><span class="p">{</span>
-      <span class="k">val</span> <span class="py">jsonResponseString</span> <span class="p">=</span> <span class="n">URL</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">readText</span><span class="p">()</span>
-   <span class="n">uiThread</span> <span class="p">{</span> <span class="n">Toast</span><span class="p">.</span><span class="n">makeText</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s">&quot;Request performed&quot;</span><span class="p">,</span> <span class="n">Toast</span><span class="p">.</span><span class="n">LENGTH_LONG</span><span class="p">).</span><span class="n">show</span><span class="p">()</span> <span class="p">}</span>
-        <span class="p">}</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">async</span><span class="p">{</span>
+      <span class="kd">val</span> <span class="py">jsonResponseString</span> <span class="p">=</span> <span class="n">URL</span><span class="p">(</span><span class="n">url</span><span class="p">).</span><span class="n">readText</span><span class="p">()</span>
+   <span class="n">uiThread</span> <span class="p">{</span> <span class="n">Toast</span><span class="p">.</span><span class="n">makeText</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s">"Request performed"</span><span class="p">,</span> <span class="n">Toast</span><span class="p">.</span><span class="n">LENGTH_LONG</span><span class="p">).</span><span class="n">show</span><span class="p">()</span> <span class="p">}</span>
+        <span class="p">}</span></code></pre></figure>
 
 <p>This allows us to easily declare the work we want done on a background thread, and yet still provides an easy way to post the results to the UI Thread.  Its comparable to the AsyncTask in Android,  but saves us the boilerplate of Callbacks.</p>
 
 <p>However, for this project i wanted to explore some of the libraries being implemented in the Kotlin community,  and stretch my legs beyond the typical OkHttp / Retrofit stack that i use at work. To that end i have decided to implement <a href="https://github.com/kittinunf/Fuel">Fuel</a> for the projects networking. You can read all about it, at the link provided.   An implementation of its standard network call when targetting our selected endpoint is as follows:</p>
 
-<div class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">async</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">        <span class="n">async</span> <span class="p">{</span>
 
           <span class="n">url</span><span class="p">.</span><span class="n">httpGet</span><span class="p">().</span><span class="n">responseJson</span> <span class="p">{</span> <span class="n">request</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">either</span> <span class="p">-&gt;</span>
-                <span class="c1">//do something with response</span>
-                <span class="k">when</span> <span class="p">(</span><span class="n">either</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="k">is</span> <span class="n">Either</span><span class="p">.</span><span class="n">Left</span> <span class="p">-&gt;</span> <span class="n">Log</span><span class="p">.</span><span class="n">e</span><span class="p">(</span><span class="n">javaClass</span><span class="p">.</span><span class="n">simpleName</span> <span class="p">,</span> <span class="n">response</span><span class="p">.</span><span class="n">toString</span><span class="p">())</span>
-
+                <span class="c1">//do something with response
+</span>                <span class="k">when</span> <span class="p">(</span><span class="n">either</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">is</span> <span class="n">Either</span><span class="p">.</span><span class="n">Left</span> <span class="p">-&gt;{</span>
+                    <span class="n">Log</span><span class="p">.</span><span class="n">e</span><span class="p">(</span><span class="n">javaClass</span><span class="p">.</span><span class="n">simpleName</span> <span class="p">,</span> <span class="n">response</span><span class="p">.</span><span class="n">toString</span><span class="p">())</span>
+                    
+                    <span class="p">}</span>
 
                     <span class="k">is</span> <span class="n">Either</span><span class="p">.</span><span class="n">Right</span> <span class="p">-&gt;</span> <span class="p">{</span>
                         <span class="n">Log</span><span class="p">.</span><span class="n">d</span><span class="p">(</span><span class="n">javaClass</span><span class="p">.</span><span class="n">simpleName</span><span class="p">,</span> <span class="n">response</span><span class="p">.</span><span class="n">toString</span><span class="p">())</span>
@@ -112,91 +115,91 @@ One of the nice features of the SeatGeek API is the ability to append an optiona
                 <span class="p">}</span>
             <span class="p">}</span>
 
-            <span class="n">uiThread</span> <span class="p">{</span> <span class="n">Toast</span><span class="p">.</span><span class="n">makeText</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s">&quot;Request performed&quot;</span><span class="p">,</span> <span class="n">Toast</span><span class="p">.</span><span class="n">LENGTH_LONG</span><span class="p">).</span><span class="n">show</span><span class="p">()</span> <span class="p">}</span>
-        <span class="p">}</span></code></pre></div>
+            <span class="n">uiThread</span> <span class="p">{</span> <span class="n">Toast</span><span class="p">.</span><span class="n">makeText</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="s">"Request performed"</span><span class="p">,</span> <span class="n">Toast</span><span class="p">.</span><span class="n">LENGTH_LONG</span><span class="p">).</span><span class="n">show</span><span class="p">()</span> <span class="p">}</span>
+        <span class="p">}</span></code></pre></figure>
 
 <p>As the documentation states ‘either is a functional style data structure that represents data that contains either left or right but not both’.  This makes it well suited to handle the usecase of representing success or failure. Indeed,  it used  for that purpose within the library. It follows a convention of  Left  being an “error”  and Right indicating “success”.</p>
 
-<p>The above function returns us the JSON we are looking for.  In the interest of brevity, i have included only the structure of a single Event JSON Object from the response data.  </p>
+<p>The above function returns us the JSON we are looking for.  In the interest of brevity, i have included only the structure of a single Event JSON Object from the response data.</p>
 
-<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
-            <span class="nt">&quot;links&quot;</span><span class="p">:</span> <span class="p">[],</span>
-            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2796833</span><span class="p">,</span>
-            <span class="nt">&quot;stats&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;listing_count&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                <span class="nt">&quot;average_price&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                <span class="nt">&quot;lowest_price_good_deals&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                <span class="nt">&quot;lowest_price&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                <span class="nt">&quot;highest_price&quot;</span><span class="p">:</span> <span class="kc">null</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Promised Land Sound&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;announce_date&quot;</span><span class="p">:</span> <span class="s2">&quot;2015-09-03T00:00:00&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.4543</span><span class="p">,</span>
-            <span class="nt">&quot;date_tbd&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-            <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;concert&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;datetime_local&quot;</span><span class="p">:</span> <span class="s2">&quot;2015-11-10T18:30:00&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;visible_until_utc&quot;</span><span class="p">:</span> <span class="s2">&quot;2015-11-11T03:30:00&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;time_tbd&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-            <span class="nt">&quot;taxonomies&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span>
-                    <span class="nt">&quot;parent_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2000000</span><span class="p">,</span>
-                    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;concert&quot;</span>
-                <span class="p">}</span>
-            <span class="p">],</span>
-            <span class="nt">&quot;performers&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="p">{</span>
-                    <span class="nt">&quot;stats&quot;</span><span class="p">:</span> <span class="p">{</span>
-                        <span class="nt">&quot;event_count&quot;</span><span class="p">:</span> <span class="mi">3</span>
-                    <span class="p">},</span>
-                    <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Promised Land Sound&quot;</span><span class="p">,</span>
-                    <span class="nt">&quot;short_name&quot;</span><span class="p">:</span> <span class="s2">&quot;Promised Land Sound&quot;</span><span class="p">,</span>
-                    <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://seatgeek.com/promised-land-sound-tickets&quot;</span><span class="p">,</span>
-                    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;band&quot;</span><span class="p">,</span>
-                    <span class="nt">&quot;image&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                    <span class="nt">&quot;home_venue_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                    <span class="nt">&quot;primary&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-                    <span class="nt">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.45332</span><span class="p">,</span>
-                    <span class="nt">&quot;images&quot;</span><span class="p">:</span> <span class="p">{},</span>
-                    <span class="nt">&quot;slug&quot;</span><span class="p">:</span> <span class="s2">&quot;promised-land-sound&quot;</span><span class="p">,</span>
-                    <span class="nt">&quot;taxonomies&quot;</span><span class="p">:</span> <span class="p">[</span>
-                        <span class="p">{</span>
-                            <span class="nt">&quot;parent_id&quot;</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
-                            <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">2000000</span><span class="p">,</span>
-                            <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;concert&quot;</span>
-                        <span class="p">}</span>
-                    <span class="p">],</span>
-                    <span class="nt">&quot;has_upcoming_events&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-                    <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">277325</span>
-                <span class="p">}</span>
-            <span class="p">],</span>
-            <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://seatgeek.com/promised-land-sound-tickets/new-york-new-york-mercury-lounge-2015-11-10-6-30-pm/concert/2796833/&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;created_at&quot;</span><span class="p">:</span> <span class="s2">&quot;2015-09-03T00:00:00&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;venue&quot;</span><span class="p">:</span> <span class="p">{</span>
-                <span class="nt">&quot;city&quot;</span><span class="p">:</span> <span class="s2">&quot;New York&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Mercury Lounge&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;extended_address&quot;</span><span class="p">:</span> <span class="s2">&quot;New York, NY 10002&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;url&quot;</span><span class="p">:</span> <span class="s2">&quot;https://seatgeek.com/venues/mercury-lounge/tickets/&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;country&quot;</span><span class="p">:</span> <span class="s2">&quot;US&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;display_location&quot;</span><span class="p">:</span> <span class="s2">&quot;New York, NY&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;links&quot;</span><span class="p">:</span> <span class="p">[],</span>
-                <span class="nt">&quot;slug&quot;</span><span class="p">:</span> <span class="s2">&quot;mercury-lounge&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;state&quot;</span><span class="p">:</span> <span class="s2">&quot;NY&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;score&quot;</span><span class="p">:</span> <span class="mf">0.45094</span><span class="p">,</span>
-                <span class="nt">&quot;postal_code&quot;</span><span class="p">:</span> <span class="s2">&quot;10002&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;location&quot;</span><span class="p">:</span> <span class="p">{</span>
-                    <span class="nt">&quot;lat&quot;</span><span class="p">:</span> <span class="mf">40.7223</span><span class="p">,</span>
-                    <span class="nt">&quot;lon&quot;</span><span class="p">:</span> <span class="mf">-73.9867</span>
-                <span class="p">},</span>
-                <span class="nt">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;217 East Houston Street&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;timezone&quot;</span><span class="p">:</span> <span class="s2">&quot;America/New_York&quot;</span><span class="p">,</span>
-                <span class="nt">&quot;id&quot;</span><span class="p">:</span> <span class="mi">327</span>
-            <span class="p">},</span>
-            <span class="nt">&quot;short_title&quot;</span><span class="p">:</span> <span class="s2">&quot;Promised Land Sound&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;datetime_utc&quot;</span><span class="p">:</span> <span class="s2">&quot;2015-11-10T23:30:00&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;general_admission&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
-            <span class="nt">&quot;datetime_tbd&quot;</span><span class="p">:</span> <span class="kc">false</span>
-        <span class="p">}</span></code></pre></div>
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="w">     </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"links"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
+            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2796833</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"stats"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"listing_count"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"average_price"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"lowest_price_good_deals"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"lowest_price"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"highest_price"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Promised Land Sound"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"announce_date"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-09-03T00:00:00"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"score"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4543</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"date_tbd"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"concert"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"datetime_local"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-11-10T18:30:00"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"visible_until_utc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-11-11T03:30:00"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"time_tbd"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"taxonomies"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="p">{</span><span class="w">
+                    </span><span class="nt">"parent_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2000000</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"concert"</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+            </span><span class="p">],</span><span class="w">
+            </span><span class="nt">"performers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="p">{</span><span class="w">
+                    </span><span class="nt">"stats"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                        </span><span class="nt">"event_count"</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w">
+                    </span><span class="p">},</span><span class="w">
+                    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Promised Land Sound"</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"short_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Promised Land Sound"</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://seatgeek.com/promised-land-sound-tickets"</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"band"</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"image"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"home_venue_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"primary"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"score"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.45332</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"images"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span><span class="w">
+                    </span><span class="nt">"slug"</span><span class="p">:</span><span class="w"> </span><span class="s2">"promised-land-sound"</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"taxonomies"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                        </span><span class="p">{</span><span class="w">
+                            </span><span class="nt">"parent_id"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span><span class="w">
+                            </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2000000</span><span class="p">,</span><span class="w">
+                            </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"concert"</span><span class="w">
+                        </span><span class="p">}</span><span class="w">
+                    </span><span class="p">],</span><span class="w">
+                    </span><span class="nt">"has_upcoming_events"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">277325</span><span class="w">
+                </span><span class="p">}</span><span class="w">
+            </span><span class="p">],</span><span class="w">
+            </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://seatgeek.com/promised-land-sound-tickets/new-york-new-york-mercury-lounge-2015-11-10-6-30-pm/concert/2796833/"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"created_at"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-09-03T00:00:00"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"venue"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                </span><span class="nt">"city"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New York"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Mercury Lounge"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"extended_address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New York, NY 10002"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"url"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://seatgeek.com/venues/mercury-lounge/tickets/"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"country"</span><span class="p">:</span><span class="w"> </span><span class="s2">"US"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"display_location"</span><span class="p">:</span><span class="w"> </span><span class="s2">"New York, NY"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"links"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span><span class="w">
+                </span><span class="nt">"slug"</span><span class="p">:</span><span class="w"> </span><span class="s2">"mercury-lounge"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"state"</span><span class="p">:</span><span class="w"> </span><span class="s2">"NY"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"score"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.45094</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"postal_code"</span><span class="p">:</span><span class="w"> </span><span class="s2">"10002"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"location"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+                    </span><span class="nt">"lat"</span><span class="p">:</span><span class="w"> </span><span class="mf">40.7223</span><span class="p">,</span><span class="w">
+                    </span><span class="nt">"lon"</span><span class="p">:</span><span class="w"> </span><span class="mf">-73.9867</span><span class="w">
+                </span><span class="p">},</span><span class="w">
+                </span><span class="nt">"address"</span><span class="p">:</span><span class="w"> </span><span class="s2">"217 East Houston Street"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"timezone"</span><span class="p">:</span><span class="w"> </span><span class="s2">"America/New_York"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">327</span><span class="w">
+            </span><span class="p">},</span><span class="w">
+            </span><span class="nt">"short_title"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Promised Land Sound"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"datetime_utc"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2015-11-10T23:30:00"</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"general_admission"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+            </span><span class="nt">"datetime_tbd"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+        </span><span class="p">}</span></code></pre></figure>
 
 <p>From this data,  we will be able to create the Data classes that will allow us to represent the Events, and its associated values for use within the API.  We will do this in part two, along with preparing the RecyclerView and its supporting cast,  to display this information for us.</p>
 
